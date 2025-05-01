@@ -1,0 +1,9 @@
+<div class="title">Login</div>
+
+<form [formGroup]="loginForm">
+  <input type="text" formControlName="email" name="email" />
+
+  <input type="text" formControlName="password" name="password" />
+
+  <button type="submit" (click)="login()">Login</button>
+</form>
