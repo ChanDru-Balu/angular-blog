@@ -1,19 +1,29 @@
 import { Component, inject } from '@angular/core';
 import { FacadeAuthService } from '../../auth/facade-auth.service';
 import { FacadeBlogService } from '../facade-blog.service';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-posts',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.css'
 })
 export class PostsComponent {
 
   facadeBlogService = inject(FacadeBlogService);
+  fb = inject(FormBuilder)
   selectedImage: any;
   imageFileName: any;
+  allPosts: any;
 
+
+  postForm = new FormGroup({
+      title: new FormControl(''),
+      subtitle: new FormControl(''),
+      content: new FormControl(''),
+      fileName: new FormControl('')
+  })
 
   ngOnInit(): void {
     this.showAllPosts();
@@ -28,6 +38,7 @@ export class PostsComponent {
   showAllPosts(): void {
     this.facadeBlogService.showAllPosts().subscribe((allPosts:any)=>{
       console.log({allPosts});
+      this.allPosts = allPosts;
     })
   }
 
@@ -39,17 +50,19 @@ export class PostsComponent {
     this.facadeBlogService.uploadImage(formData).subscribe((response:any)=>{
       console.log({response});
       this.imageFileName = response.filename ;
+      this.postForm.patchValue({fileName: response.filename})
     })
 
   }  
   
   cretePost() {
+    console.log("Form Values:",this.postForm.value);
     let post = {
       userId : 'new',
-      title : 'new',
-      subtile : 'new',
+      title : this.postForm.value.title ,
+      subtile : this.postForm.value.subtitle ,
       date : new Date(),
-      image : this.imageFileName
+      image : this.postForm.value.fileName
     }
 
     this.facadeBlogService.createPost(post).subscribe((response:any)=>{

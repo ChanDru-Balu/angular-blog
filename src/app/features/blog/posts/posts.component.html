@@ -1,9 +1,20 @@
 <p>posts works!</p>
 
+@for (post of allPosts; track $index) {
+<div>
+  <p>{{ post.title }}</p>
+</div>
+}
 
-<input type="file" (change)="onImageSelected($event)" >
+<form  [formGroup]="postForm" >
 
-<button (click)="imageUpload()" > Upload Image</button>
+    <input type="text" formControlName="title">
+    <input type="text" formControlName="subtitle">
+    <input type="text" formControlName="content">
 
+  <input type="file" (change)="onImageSelected($event)" />
 
-<button (click)="cretePost()" >Create Post</button>
+  <button (click)="imageUpload()">Upload Image</button>
+
+  <button (click)="cretePost()">Create Post</button>
+</form>
