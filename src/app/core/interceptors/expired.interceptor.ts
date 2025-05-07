@@ -10,9 +10,9 @@ export const expiredInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError(error=>{
       if(error instanceof HttpErrorResponse){
-
-        if(error.status == 401){
-          console.error("Unauthorized access!");
+        console.log({error})
+        if(error.error.error.name == "TokenExpiredError"){
+          console.error("invalid token!");
           router.navigate(['/login'],{replaceUrl: true})
         }
         if(error.status == 403){

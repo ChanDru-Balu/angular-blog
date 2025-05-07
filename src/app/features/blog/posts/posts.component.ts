@@ -1,7 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core';
 import { FacadeAuthService } from '../../auth/facade-auth.service';
 import { FacadeBlogService } from '../facade-blog.service';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { DynamicFormComponent } from '../../../core/components/common/dynamic-form/dynamic-form.component';
+
+export interface DynamicFormField {
+  name: string;
+  type: 'text' | 'textarea' | 'file';
+  label: string;
+  required?: boolean;
+}
 
 @Component({
   selector: 'app-posts',
@@ -11,28 +19,25 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angul
 })
 export class PostsComponent {
 
+  
+
   facadeBlogService = inject(FacadeBlogService);
   fb = inject(FormBuilder)
+
+  @ViewChild('formContentContainer',{
+    read: ViewContainerRef,
+    static: true
+  })
+  
+  formContentContainer! : ViewContainerRef
+
+
   selectedImage: any;
   imageFileName: any;
   allPosts: any;
 
-
-  postForm = new FormGroup({
-      title: new FormControl(''),
-      subtitle: new FormControl(''),
-      content: new FormControl(''),
-      fileName: new FormControl('')
-  })
-
   ngOnInit(): void {
     this.showAllPosts();
-  }
-
-  onImageSelected(event: any) {
-    console.log({event})
-    this.selectedImage = event.target.files[0];
-    console.log('Image:',this.selectedImage);
   }
 
   showAllPosts(): void {
@@ -42,32 +47,20 @@ export class PostsComponent {
     })
   }
 
-  imageUpload() {
-    const formData = new FormData();
+  createPost(){
 
-    formData.append('image',this.selectedImage);
 
-    this.facadeBlogService.uploadImage(formData).subscribe((response:any)=>{
-      console.log({response});
-      this.imageFileName = response.filename ;
-      this.postForm.patchValue({fileName: response.filename})
-    })
+    let formContainerRef = this.formContentContainer.createComponent(DynamicFormComponent);
 
-  }  
-  
-  cretePost() {
-    console.log("Form Values:",this.postForm.value);
-    let post = {
-      userId : 'new',
-      title : this.postForm.value.title ,
-      subtile : this.postForm.value.subtitle ,
-      date : new Date(),
-      image : this.postForm.value.fileName
-    }
+    const formConfig: DynamicFormField[] = [
+      { name: 'title', type: 'text', label: 'Title', required: true },
+      { name: 'subtitle', type: 'text', label: 'Subtitle' },
+      { name: 'content', type: 'textarea', label: 'Content', required: true },
+      { name: 'fileName', type: 'file', label: 'Image (optional)' }
+    ];
 
-    this.facadeBlogService.createPost(post).subscribe((response:any)=>{
-      console.log({response});
-    })
+    formContainerRef.instance.title = 'Create Post!';
+    formContainerRef.instance.formConfig = formConfig ;
 
   }
 

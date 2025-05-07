@@ -1,0 +1,15 @@
+<h3>{{title}}</h3>
+
+<div class="form">
+
+    <form [formGroup]="form" >
+
+      @for (formControl of formConfig;track $index ){
+        <input [formControlName]="formControl.name" >
+      }
+
+    </form>
+
+    <button (click)="submitForm()">Submit Form</button>
+
+</div>

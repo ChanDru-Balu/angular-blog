@@ -1,0 +1,12 @@
+<form  [formGroup]="postForm" >
+
+    <input type="text" formControlName="title">
+    <input type="text" formControlName="subtitle">
+    <input type="text" formControlName="content">
+
+  <input type="file" (change)="onImageSelected($event)" />
+
+  <button (click)="imageUpload()">Upload Image</button>
+
+  <button (click)="cretePost()">Create Post</button>
+</form>
